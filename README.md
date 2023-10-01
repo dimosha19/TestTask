@@ -247,6 +247,170 @@ func main() {
 
 Решением является [go-код](https://github.com/dimosha19/TestTask/tree/main/deamon). Список процессов получаем от системы вызывая `exec.Command("ps", "aux")`. Результат команды - сырой текст, его нужно дополнительно форматировать.
 
+api_models.go:
+```go
+package deamon
+
+type PID int
+
+type proc struct {
+	User    string   `json:"User"`
+	Pid     PID      `json:"Pid"`
+	Cpu     string   `json:"Cpu"`
+	Mem     string   `json:"Mem"`
+	Vsz     string   `json:"Vsz"`
+	Rss     string   `json:"Rss"`
+	Tty     string   `json:"Tty"`
+	Stat    string   `json:"Stat"`
+	Start   string   `json:"Start"`
+	Time    string   `json:"Time"`
+	Command []string `json:"Command"`
+}
+
+type ProcessResponse struct {
+	Error   *string `json:"error,omitempty"`
+	Process []proc  `json:"Process,omitempty"`
+}
+
+```
+
+handlers.go
+
+```go
+package deamon
+
+import (
+	"bytes"
+	"log"
+	"net/http"
+	"os/exec"
+	"strconv"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+)
+
+func GetProcList(c *gin.Context) {
+	var out bytes.Buffer
+
+	cmd := exec.Command("ps", "aux")
+	cmd.Stdout = &out
+
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.IndentedJSON(
+		http.StatusOK,
+		ProcessResponse{
+			Process: splitByRow(out.String()),
+		},
+	)
+}
+
+func splitByRow(str string) []proc {
+	var res []proc
+	procList := strings.Split(str, "\n")
+
+	for i, proc := range procList {
+		if i > 0 && proc != "" {
+			convertedProc := convertProcToStruct(proc)
+			res = append(res, convertedProc)
+		}
+	}
+
+	return res
+}
+
+func convertProcToStruct(process string) proc {
+	procProperties := strings.Fields(process)
+
+	pid, err := strconv.Atoi(procProperties[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return proc{
+		User:    procProperties[0],
+		Pid:     PID(pid),
+		Cpu:     procProperties[2],
+		Mem:     procProperties[3],
+		Vsz:     procProperties[4],
+		Rss:     procProperties[5],
+		Tty:     procProperties[6],
+		Stat:    procProperties[7],
+		Start:   procProperties[8],
+		Time:    procProperties[9],
+		Command: procProperties[10:],
+	}
+}
+
+```
+
+routes.go
+
+```go
+package deamon
+
+import (
+	ginzerolog "github.com/dn365/gin-zerolog"
+	"github.com/gin-gonic/gin"
+)
+
+// NewEngine returns a new gin instance.
+func NewEngine() *gin.Engine {
+	r := gin.New()
+	r.Use(gin.Recovery())
+	if gin.Mode() != "debug" {
+		r.Use(ginzerolog.Logger("gin"))
+	} else {
+		r.Use(gin.Logger())
+	}
+
+	r.GET("/process", GetProcList)
+	return r
+}
+
+```
+
+server.go
+```go
+package deamon
+
+import (
+	"fmt"
+	"net/http"
+)
+
+type Option func(s *http.Server)
+
+func WithPort(port string) Option {
+	return func(s *http.Server) {
+		s.Addr = fmt.Sprintf(":%s", port)
+	}
+}
+
+func WithHandler(handler http.Handler) Option {
+	return func(s *http.Server) {
+		s.Handler = handler
+	}
+}
+
+func NewServer(options ...Option) *http.Server {
+	srv := &http.Server{
+		Addr: "0.0.0.0:8080",
+	}
+
+	for _, opt := range options {
+		opt(srv)
+	}
+
+	return srv
+}
+
+```
+
 ## 3.1 Решение:
 
 Описываем dockerfile и собираем его, например такой командой, если находимся в корне проекта
