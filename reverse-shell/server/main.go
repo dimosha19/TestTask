@@ -62,5 +62,3 @@ func main() {
 	wg.Wait()
 }
 
-// docker build -t iedesy/server .
-// docker run --rm -p 8081:8081 iedesy/server
