@@ -24,10 +24,13 @@ main --use uac --id 2 --payload c:\\windows\\system32\\cmd.exe
 
 Скачиваем проект [отсюда](https://github.com/kernelm0de/ProcessHider).
 1. Устанавливаем набор инструментов от 2015 года, чтобы собрать проект.
+
 ![Alt text](src/image-1.png)
 2. Переносим все файлы из include в папку ProcessHider и поправляем импорты в main.cpp в той же папке
+
 ![Alt text](src/image-3.png)
 3. Открываем проект и обновляем **target platform version** до 10.
+
 ![Alt text](src/image-2.png)
 
 Cобираем проект и получаем вредонос, который можно запустить на ПК жертвы от имени администратора, напрмимер, с использованием программы в задаче 2.1.
