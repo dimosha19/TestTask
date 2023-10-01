@@ -23,14 +23,14 @@ main --use uac --id 2 --payload c:\\windows\\system32\\cmd.exe
 ## 2.2 Решение:
 
 Скачиваем проект [отсюда](https://github.com/kernelm0de/ProcessHider).
-1. Устанавливаем набор инструментов от 2015 года, чтобы собрать проект.![Alt text](src/image-1.png)
+1. Устанавливаем набор инструментов от 2015 года, чтобы собрать проект.
+![Alt text](src/image-1.png)
 2. Перенести все файлы из include в папку ProcessHider и поправить импорты в main.cpp в той же папке
 ![Alt text](src/image-3.png)
 3. Открываем проект и обновляем **target platform version до 10**.
 ![Alt text](src/image-2.png)
 
-Cобираем проект и запускаем от имени администратора/
-
+Cобираем проект и запускаем exe от имени администратора
 
 ![Alt text](src/poc2.2.gif)
 
