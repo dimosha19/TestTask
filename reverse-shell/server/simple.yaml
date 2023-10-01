@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dima-server-deployment
+  namespace: k8s-extensions
+  labels:
+    app: dima-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dima-server
+  template:
+    metadata:
+      labels:
+        app: dima-server
+    spec:
+      containers:
+      - name: dima-server
+        image: iedesy/server:latest
+        ports:
+        - containerPort: 80

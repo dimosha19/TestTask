@@ -1,0 +1,15 @@
+FROM golang:1.19
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . ./
+WORKDIR /app/cmd/deamon
+
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o deamon
+
+EXPOSE 8080
+WORKDIR /app/
+CMD ["/app/cmd/deamon/deamon"]
